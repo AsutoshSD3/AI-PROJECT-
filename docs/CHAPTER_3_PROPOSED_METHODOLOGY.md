@@ -104,16 +104,6 @@ Trusted instruction
 -> environment execution
 -> task evaluation
 
-## 3.9 Review Demonstration
-
-Use three controlled cases from the same task/seed:
-
-- Referential
-- Incidental
-- Conflicting
-
-For each case display trusted instruction, RGB frame, OCR result, R/I/C probabilities, predicted action and final task result.
-
-## 3.10 Reproducibility
+## 3.9 Reproducibility
 
 Record random seed, model configuration, dataset split, preprocessing, OCR configuration, visual encoder, language encoder, action representation, optimizer, learning rate, batch size, loss weights, hardware and software versions.
