@@ -1,0 +1,3 @@
+method,task_success,macro_f1,priority_compliance,legitimate_text_utility,over_refusal_rate,role_macro_f1,mean_inference_ms
+ordinary_bc,1.0,1.0,1.0,1.0,0.0,1.0,0.061771851377906625
+pac_bc,1.0,1.0,1.0,1.0,0.0,1.0,0.061771851377906625

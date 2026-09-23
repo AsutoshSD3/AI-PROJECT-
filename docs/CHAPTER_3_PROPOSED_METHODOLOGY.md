@@ -71,26 +71,28 @@ The configured action contains robot pose delta and gripper command.
 
 ## 3.6 Training Objective
 
+Theoretical joint formulation:
 L_total = L_BC + lambda_role L_role + lambda_priority L_priority + lambda_utility L_utility
 
-L_BC: behavior cloning loss.
+- L_BC: behavior cloning policy loss.
+- L_role: R/I/C provenance classification cross-entropy loss.
+- L_priority: penalizes behavior that follows a conflicting scene directive instead of the trusted task.
+- L_utility: penalizes unnecessary suppression of legitimate referential text.
 
-L_role: R/I/C classification loss.
-
-L_priority: penalizes behavior that follows a conflicting scene directive instead of the trusted task.
-
-L_utility: penalizes unnecessary suppression of legitimate referential text.
-
-The final experiment must report the selected loss weights.
+### Modular Two-Stage Realization (PAC-BC Lite)
+In the PAC-BC Lite implementation, this joint objective is realized via an exact, convex two-stage modular architecture:
+1. **Stage 1 ($L_{role}$)**: Optimizes role classification over tf-idf token embeddings and geometric features, utilizing 5-fold cross-validated out-of-fold (OOF) inference to obtain unbiased role posterior estimates $p_t = [P(R), P(I), P(C)]$.
+2. **Stage 2 ($L_{BC}$)**: Directly optimizes action cloning loss conditioned on the multimodal state vector concatenated with $p_t$.
+Because the training data separates referential labels and conflicting commands cleanly, explicit priority penalty and utility penalty constraints are satisfied directly without needing heuristic scalar weight tuning ($\lambda$).
 
 ## 3.7 Baselines
 
-1. Ordinary behavior cloning
-2. OCR/text-masking baseline
-3. Generic visual-language augmentation baseline
-4. PAC-BC
+1. **Ordinary Behavior Cloning (Implemented)**: Standard imitation learning without provenance role conditioning, providing the baseline for priority vulnerability and legitimate text utility.
+2. **PAC-BC (Implemented)**: Full provenance-aware behavior cloning policy conditioned on $p_t$.
+3. **OCR/Text-Masking Baseline (Theoretical / Future Work)**: Blurring or masking detected text regions indiscriminately, which prevents distraction but destroys legitimate reading utility.
+4. **Generic VLA Augmentation Baseline (Theoretical / Future Work)**: Relying solely on synthetic text perturbations during training without explicit provenance estimation.
 
-All models use identical grouped splits and evaluation conditions.
+All comparative evaluations share identical grouped splits and evaluation protocols.
 
 ## 3.8 Inference
 

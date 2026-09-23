@@ -1,0 +1,35 @@
+{
+  "role_candidates": [
+    {
+      "model": "logistic_regression",
+      "validation_macro_f1": 1.0
+    },
+    {
+      "model": "random_forest",
+      "validation_macro_f1": 1.0
+    }
+  ],
+  "selected_role_model": "logistic_regression",
+  "action_candidates": [
+    {
+      "model": "logistic_regression",
+      "validation_macro_f1": 1.0
+    },
+    {
+      "model": "random_forest",
+      "validation_macro_f1": 1.0
+    }
+  ],
+  "selected_pac_model": "logistic_regression",
+  "baseline_candidates": [
+    {
+      "model": "logistic_regression",
+      "validation_macro_f1": 1.0
+    },
+    {
+      "model": "random_forest",
+      "validation_macro_f1": 1.0
+    }
+  ],
+  "selected_baseline_model": "logistic_regression"
+}
