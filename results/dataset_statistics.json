@@ -1,0 +1,16 @@
+{
+  "samples": 900,
+  "base_episodes": 300,
+  "roles": {
+    "referential": 300,
+    "incidental": 300,
+    "conflicting": 300
+  },
+  "duplicates": 0,
+  "missing": 0,
+  "splits": {
+    "train": 630,
+    "validation": 135,
+    "test": 135
+  }
+}

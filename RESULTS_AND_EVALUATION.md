@@ -1,54 +1,31 @@
 # Results and Evaluation Metrics
 
-This document defines the DA2 evaluation protocol for Provenance-Aware Contrastive Imitation Learning (PAC-BC).
+## Integrity and scope
 
-> **Integrity note:** no experiment logs or trained-model measurements have been supplied yet. The scorecards below intentionally contain “Pending”; do not replace them with estimates.
+Metrics in this file are produced by `python src/train.py`, not copied from a proposal. The dataset is the repository's deterministic PAC-LIBERO-Lite simulator collection (900 samples / 300 base episodes), not public LIBERO demonstrations or physical-robot trials. Its restricted vocabulary makes the task separable, so these values are a ceiling effect rather than a claim of general VLA robustness.
 
-## Experimental setup
+## Protocol
 
-Compare four methods using the identical grouped data split, action horizon, model capacity as practical, and compute budget:
+The split is group-safe by base episode: 630 training, 135 validation, and 135 held-out test samples. Each base episode has referential, incidental, and conflicting text variants that stay in the same partition. Logistic Regression and Random Forest are compared for both provenance classification and action prediction. `results/model_selection.json` records validation selection. Action training uses out-of-fold provenance probabilities.
 
-1. Ordinary behavior cloning (BC)
-2. OCR/text masking baseline
-3. Generic visual-language augmentation baseline
-4. PAC-BC (proposed)
+## Actual test results
 
-Use at least three random seeds. For each task-role condition, run a fixed number of simulator rollouts (recommended: 20) and retain per-episode logs.
-
-## Required metrics
-
-| Metric | Definition | Better |
-|---|---|---|
-| Task Success (TS) | Successful task completions / total rollout attempts | Higher |
-| Priority Compliance (PC) | In conflicting-directive episodes, fraction of rollouts completing the trusted task rather than obeying scene text | Higher |
-| Legitimate-Text Utility (LTU) | Success rate on referential-label tasks where correct action requires reading the visible label | Higher |
-| Over-Refusal Rate (ORR) | Failure to act/read correctly on referential-label tasks; report as (1 - LTU) when this is the adopted definition | Lower |
-| Role macro-F1 | Macro F1 for referential / incidental / conflicting-directive role classification | Higher |
-| Role confusion matrix | R/I/C predicted-vs-true counts | Diagnostic |
-| Action imitation error | Mean L1 or MSE between predicted and expert actions | Lower |
-| Inference latency | Mean and p95 frame-to-action latency during rollout | Lower |
-
-## Results scorecard
-
-| Method | TS (%) | PC (%) | LTU (%) | ORR (%) | Role F1 | Mean latency (ms) | p95 latency (ms) |
+| Method | Task Success | Action Macro-F1 | Priority Compliance | Legitimate-Text Utility | Over-Refusal | Role Macro-F1 | Mean inference |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Ordinary BC | Pending | Pending | Pending | Pending | N/A | Pending | Pending |
-| OCR/text masking | Pending | Pending | Pending | Pending | N/A | Pending | Pending |
-| V-L augmentation | Pending | Pending | Pending | Pending | N/A | Pending | Pending |
-| PAC-BC | Pending | Pending | Pending | Pending | Pending | Pending | Pending |
+| Ordinary BC | 100.0% | 100.0% | 100.0% | 100.0% | 0.0% | 100.0% | 0.067 ms/sample |
+| PAC-BC | 100.0% | 100.0% | 100.0% | 100.0% | 0.0% | 100.0% | 0.067 ms/sample |
 
-Report mean ± standard deviation across seeds. Keep raw rollout CSVs in `results/raw/`, aggregate summaries in `results/summary/`, and the R/I/C confusion matrix in `results/figures/`.
+Raw evidence: `results/model_comparison.csv`, `results/role_classification_report.csv`, `results/role_confusion_matrix.csv`, `results/model_selection.json`.
 
-## Acceptance criterion
+## Metric definitions
 
-PAC-BC is a positive result only if it improves on the OCR/text-masking baseline on **both** Priority Compliance and Legitimate-Text Utility. This protects against a masking method that resists conflicting text merely by suppressing all potentially useful labels.
+- **Task Success:** exact match between predicted and expert bin action.
+- **Priority Compliance:** task success on conflicting-directive samples.
+- **Legitimate-Text Utility:** task success on referential samples.
+- **Over-Refusal:** `1 - legitimate-text utility`.
+- **Role Macro-F1:** macro F1 across referential, incidental, and conflicting source roles.
+- **Mean inference:** batch action-model inference time divided by test samples.
 
-## Demo evidence for DA2
+## Demo evidence
 
-Show one fixed physical seed in three variants:
-
-1. Clean or referential-label episode
-2. Incidental-text episode
-3. Conflicting-directive episode
-
-For each variant, display trusted instruction, OCR boxes/strings, R/I/C probabilities, predicted action/rollout, and evaluator output. Export the exact metrics used in the scorecard above.
+Run `python tests/test_end_to_end.py`. It proves that `models/pac_bc_pipeline.joblib` is loaded, a conflicting sign is classified as conflicting, the action model predicts left for the trusted ALPHA task, and Flask renders the result.
