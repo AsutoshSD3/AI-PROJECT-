@@ -112,7 +112,7 @@ data/raw/pac_libero_lite.csv  Generated sample metadata
 | Where is the live frontend? | `app/templates/index.html`; run `python app/app.py` |
 | How do you prove it is end-to-end? | Run `python tests/test_end_to_end.py` |
 
-## 5–10 minute faculty demo flow
+## Demo flow
 
 1. Explain that visible text can be useful, irrelevant, or adversarial.
 2. Open `data/raw/pac_libero_lite.csv` and `results/eda_overview.png`.
@@ -123,7 +123,7 @@ data/raw/pac_libero_lite.csv  Generated sample metadata
 7. Run `python tests/test_end_to_end.py`.
 8. Run `python app/app.py`, enter the supplied conflicting-sign example, and point out the R/I/C probabilities and action.
 
-## Likely viva questions
+## FAQs
 
 **Why this dataset?** The repository contained no downloadable LIBERO data. The deterministic simulator gives labeled paired R/I/C variants, controls physical state, and is reproducible. It is clearly scoped as a Lite implementation, not presented as LIBERO.
 
