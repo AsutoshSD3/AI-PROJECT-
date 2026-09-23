@@ -1,125 +1,109 @@
 # Proposed Project Architecture — PAC-BC
 
-## 1. System Overview
+## 1. System Architecture
 
-PAC-BC is a provenance-aware imitation-learning framework for language-conditioned robot manipulation. It receives a trusted task instruction, an RGB observation and robot state. Visible scene text is extracted with OCR and classified as Referential (R), Incidental (I), or Conflicting Directive (C). The provenance-aware policy then predicts the robot action.
+![PAC-BC System Architecture](../assets/pac_bc_architecture.png)
 
-## 2. End-to-End Data Flow
+**Figure 3.1. Proposed Provenance-Aware Behavior Cloning (PAC-BC) system architecture.**
 
-    Trusted Task Instruction
-              |
-              v
-       Instruction Encoder
-              |
-              | instruction embedding
-              v
-    +-------------------------+
-    |                         |
-    | RGB Camera Observation  | ---> OCR / Text Region Extractor
-    |                         |              |
-    +-------------------------+              v
-             |                         text + bounding boxes
-             |                               |
-             |                               v
-             |                      Provenance Classifier
-             |                         R / I / C
-             |                               |
-             +---------------+---------------+
-                             |
-                             v
-                  PAC-BC Behavior Policy
-                             |
-                             v
-                    Robot Action Head
-                  pose delta + gripper
-                             |
-                             v
-                    LIBERO Environment
-                             |
-                             v
-                 Task Success / Evaluation
+The proposed system receives two primary inputs: the **trusted task instruction** and the **RGB camera observation**. The trusted instruction is encoded by the Instruction Encoder. The RGB observation is processed by the OCR/Text Region Extractor to obtain visible text and its bounding boxes. The extracted text is passed to the Provenance Classifier, which assigns the text to one of three roles: **Referential (R), Incidental (I), or Conflicting Directive (C)**.
 
-## 3. Major Components
+The PAC-BC Behavior Policy combines the trusted instruction representation, visual information, provenance information, and robot state to predict the robot action. The Robot Action Head produces the required pose delta and gripper command, which are executed in the LIBERO environment. The resulting task execution is used for evaluation.
 
-### RGB observation module
-Receives camera observations from the LIBERO manipulation environment. Frames are resized and normalized before visual processing.
+## 2. Major Components
 
-### Robot-state module
-Provides the robot proprioception/state required for action prediction.
+### 2.1 Trusted Task Instruction
+The natural-language instruction supplied by the task defines the intended objective and is treated as the authoritative instruction.
 
-### OCR / text-region extractor
-Detects visible text and records text string, bounding box, OCR confidence, frame ID and episode ID.
+### 2.2 Instruction Encoder
+Converts the trusted task instruction into a numerical embedding suitable for fusion with visual and provenance features.
 
-### Trusted instruction encoder
-Encodes the natural-language task instruction. The trusted instruction is treated as the authoritative task objective.
+### 2.3 RGB Camera Observation
+Provides the visual scene observation containing the manipulated objects and any visible scene text.
 
-### Provenance role classifier
-Classifies every detected text instance into:
+### 2.4 OCR / Text Region Extractor
+Detects visible text in the RGB observation and provides recognized strings and bounding-box coordinates.
 
-| Label | Meaning | Policy treatment |
+### 2.5 Provenance Classifier
+Assigns each detected text instance to one of the following roles:
+
+| Role | Definition | Intended treatment |
 |---|---|---|
-| R | Legitimate task-related text | Preserve/use |
-| I | Irrelevant visible text | Ignore |
-| C | Untrusted conflicting directive | Reject |
+| **R — Referential** | Task-relevant text that can legitimately help complete the task | Preserve/use |
+| **I — Incidental** | Visible text unrelated to the task | Ignore |
+| **C — Conflicting Directive** | Untrusted text that conflicts with the trusted instruction | Reject |
 
-The classifier outputs P(R), P(I), P(C).
+The classifier produces a probability distribution over R/I/C.
 
-### PAC-BC policy
-Fuses visual features, trusted instruction representation, OCR/text representation, provenance probabilities and robot state.
+### 2.6 PAC-BC Behavior Policy
+Fuses the visual observation, instruction representation, provenance representation, and robot state. The policy is trained with behavior cloning together with provenance-aware objectives.
 
-The proposed training objective is:
+The proposed total objective is:
 
-L_total = L_BC + lambda_role L_role + lambda_priority L_priority + lambda_utility L_utility
+**L_total = L_BC + λ_role L_role + λ_priority L_priority + λ_utility L_utility**
 
-where L_BC is behavior cloning loss, L_role is R/I/C classification loss, L_priority penalizes following conflicting scene directives, and L_utility penalizes suppressing useful referential text.
+where:
 
-### Action head
-Predicts the configured robot action, represented in the current design as end-effector pose delta plus gripper command.
+- **L_BC:** expert action imitation loss.
+- **L_role:** R/I/C role-classification loss.
+- **L_priority:** encourages compliance with the trusted instruction when scene text conflicts with it.
+- **L_utility:** preserves useful behavior when visible text is legitimately task-relevant.
 
-### Evaluation module
-Records Task Success, Priority Compliance, Legitimate-Text Utility, Over-Refusal Rate, role macro-F1, confusion matrix, action imitation error and inference latency.
+### 2.7 Robot Action Head
+Converts the policy representation into the configured robot control output, represented in the project design as pose delta and gripper command.
+
+### 2.8 LIBERO Environment
+Executes the predicted action within the LIBERO robot-manipulation environment and provides the basis for task-success evaluation.
+
+### 2.9 Evaluation
+The project evaluates task behavior using appropriate metrics such as Task Success, Priority Compliance, Legitimate-Text Utility, Over-Refusal Rate, role macro-F1, confusion matrix, action imitation error, and inference latency.
+
+## 3. Data Flow
+
+**Trusted Task Instruction → Instruction Encoder → PAC-BC Behavior Policy**
+
+**RGB Camera Observation → OCR/Text Region Extractor → Provenance Classifier → PAC-BC Behavior Policy**
+
+**Robot state + encoded inputs → PAC-BC Behavior Policy → Robot Action Head → LIBERO Environment → Evaluation**
 
 ## 4. Technology Stack
 
 | Layer | Technology |
 |---|---|
-| Robot benchmark/simulation | LIBERO |
-| ML framework | PyTorch |
-| Language | Python |
-| OCR | Configured OCR engine |
+| Robot benchmark / simulation | LIBERO |
+| Machine learning | PyTorch |
+| Programming | Python |
+| OCR / text extraction | Configured OCR engine |
 | Image processing | OpenCV / torchvision |
-| Language representation | Transformer-based text encoder |
+| Language encoding | Transformer-based text encoder |
 | Configuration | YAML |
-| Data metadata | JSON / CSV |
-| Version control | Git + GitHub |
+| Metadata | JSON / CSV |
+| Version control | Git / GitHub |
 | Compute | CUDA-capable NVIDIA GPU recommended |
 
-Exact package versions and the selected OCR/text encoder must be pinned before final experiments.
+Exact package versions and the selected OCR and language-encoder implementations should be fixed in the final experiment configuration.
 
-## 5. Training Flow
+## 5. Training Workflow
 
-1. Download public LIBERO demonstrations.
-2. Select the target expert episodes.
-3. Render RGB observations.
-4. Generate R/I/C visible-text variants.
-5. Store ground-truth role labels.
-6. Run OCR and store detected strings and boxes.
-7. Preprocess image, text, state and action data.
+1. Obtain the public LIBERO demonstrations.
+2. Select the required expert episodes.
+3. Render RGB observations and robot-state/action information.
+4. Generate controlled visible-text variants for R, I, and C conditions.
+5. Store ground-truth provenance labels.
+6. Run OCR and store recognized text, boxes, and confidence.
+7. Apply the defined preprocessing pipeline.
 8. Create grouped train/validation/test manifests.
-9. Train PAC-BC and baseline models.
-10. Evaluate on identical test conditions.
-11. Store raw logs, summaries and figures.
+9. Train PAC-BC and the selected baseline methods.
+10. Evaluate all methods under identical test conditions.
+11. Store raw metrics, aggregate results, and figures.
 
-## 6. Review Demo
+## 6. Architecture Interpretation for Review
 
-Show the same task in three conditions:
+The key design principle is that **visible text is not treated as automatically trustworthy**. The trusted task instruction remains the primary objective, while OCR text is interpreted through the provenance classifier before it influences action prediction.
 
-1. Referential text
-2. Incidental text
-3. Conflicting directive
+The architecture therefore addresses two requirements simultaneously:
 
-For each case show:
+1. Preserve task-relevant text understanding.
+2. Prevent irrelevant or conflicting scene text from overriding the trusted task.
 
-Trusted instruction -> RGB frame -> OCR boxes/text -> R/I/C probabilities -> predicted action -> task result
-
-This directly demonstrates the proposed input-to-output pipeline.
+> **Implementation note:** The figure in this document shows the proposed system architecture. Experimental measurements, model configurations, and final performance values should only be reported after the corresponding implementation and experiments have been executed.
