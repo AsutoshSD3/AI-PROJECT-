@@ -1,6 +1,6 @@
 # Results and Evaluation Metrics
 
-This document defines the DA2 evaluation protocol for Provenance-Aware Contrastive Imitation Learning (PAC-BC).
+This document defines the evaluation protocol for Provenance-Aware Contrastive Imitation Learning (PAC-BC).
 
 > **Integrity note:** no experiment logs or trained-model measurements have been supplied yet. The scorecards below intentionally contain “Pending”; do not replace them with estimates.
 
