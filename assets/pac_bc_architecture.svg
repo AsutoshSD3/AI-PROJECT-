@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1408" height="768" viewBox="0 0 1408 768">
+<defs>
+ <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity=".18"/></filter>
+ <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dff1ff"/><stop offset="1" stop-color="#b9def7"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe5b5"/><stop offset="1" stop-color="#ffd28a"/></linearGradient>
+ <linearGradient id="purple" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e1d8f6"/><stop offset="1" stop-color="#d2c3ee"/></linearGradient>
+ <linearGradient id="green" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d8f1d8"/><stop offset="1" stop-color="#bde4bd"/></linearGradient>
+ <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6faed0"/></marker>
+ <marker id="orangeArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e59b28"/></marker>
+ <marker id="purpleArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9272c7"/></marker>
+ <marker id="greenArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#57a95c"/></marker>
+</defs>
+<rect width="1408" height="768" fill="#fff"/>
+<text x="704" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#111">Provenance-Aware Behavior Cloning (PAC-BC) System Architecture</text>
+<text x="704" y="91" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#66a3c2">Inputs</text>
+
+<rect x="542" y="106" width="325" height="52" rx="12" fill="url(#blue)" stroke="#6db1d8" stroke-width="2" filter="url(#shadow)"/>
+<text x="704" y="139" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="500">Trusted Task Instruction</text>
+<line x1="704" y1="158" x2="704" y2="211" stroke="#6faed0" stroke-width="4" marker-end="url(#blueArrow)"/>
+<text x="720" y="189" font-family="Arial, sans-serif" font-size="18">instruction embedding</text>
+
+<rect x="541" y="212" width="326" height="53" rx="12" fill="url(#blue)" stroke="#6db1d8" stroke-width="2" filter="url(#shadow)"/>
+<text x="704" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="21">Instruction Encoder</text>
+
+<text x="286" y="236" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" fill="#b07b1c">Visual Processing</text>
+<rect x="164" y="248" width="246" height="107" rx="10" fill="none" stroke="#d59b43" stroke-width="2"/>
+<rect x="181" y="252" width="213" height="92" rx="12" fill="url(#orange)" stroke="#e2a239" stroke-width="2" filter="url(#shadow)"/>
+<text x="287" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">RGB Camera</text>
+<text x="287" y="307" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">Observation</text>
+
+<rect x="950" y="252" width="218" height="92" rx="12" fill="url(#orange)" stroke="#e2a239" stroke-width="2" filter="url(#shadow)"/>
+<text x="1059" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="19">OCR / Text</text>
+<text x="1059" y="307" text-anchor="middle" font-family="Arial, sans-serif" font-size="19">Region Extractor</text>
+
+<line x1="394" y1="276" x2="950" y2="276" stroke="#e59b28" stroke-width="4" marker-end="url(#orangeArrow)"/>
+<line x1="287" y1="344" x2="287" y2="420" stroke="#e59b28" stroke-width="4"/>
+<line x1="287" y1="420" x2="542" y2="420" stroke="#e59b28" stroke-width="4" marker-end="url(#orangeArrow)"/>
+<line x1="867" y1="237" x2="867" y2="318" stroke="#6faed0" stroke-width="4" marker-end="url(#blueArrow)"/>
+
+<line x1="1059" y1="344" x2="1059" y2="360" stroke="#e59b28" stroke-width="4" marker-end="url(#orangeArrow)"/>
+<text x="1080" y="357" font-family="Arial, sans-serif" font-size="17">text + bounding boxes</text>
+<rect x="968" y="360" width="199" height="70" rx="12" fill="url(#orange)" stroke="#e2a239" stroke-width="2" filter="url(#shadow)"/>
+<text x="1068" y="388" text-anchor="middle" font-family="Arial, sans-serif" font-size="18">Provenance</text>
+<text x="1068" y="413" text-anchor="middle" font-family="Arial, sans-serif" font-size="18">Classifier</text>
+<line x1="968" y1="396" x2="866" y2="396" stroke="#e59b28" stroke-width="4" marker-end="url(#orangeArrow)"/>
+<text x="1068" y="452" text-anchor="middle" font-family="Arial, sans-serif" font-size="18">R / I / C</text>
+
+<rect x="542" y="319" width="326" height="140" rx="30" fill="url(#purple)" stroke="#987bc8" stroke-width="2" filter="url(#shadow)"/>
+<text x="705" y="350" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#70548e">Policy &amp; Control</text>
+<text x="705" y="384" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="500">PAC-BC</text>
+<text x="705" y="414" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="500">Behavior Policy</text>
+
+<line x1="705" y1="459" x2="705" y2="497" stroke="#9272c7" stroke-width="4" marker-end="url(#purpleArrow)"/>
+<rect x="582" y="496" width="246" height="52" rx="10" fill="url(#purple)" stroke="#987bc8" stroke-width="2" filter="url(#shadow)"/>
+<text x="705" y="529" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">Robot Action Head</text>
+<text x="705" y="574" text-anchor="middle" font-family="Arial, sans-serif" font-size="17">pose delta + gripper</text>
+
+<line x1="705" y1="549" x2="705" y2="595" stroke="#9272c7" stroke-width="4" marker-end="url(#purpleArrow)"/>
+<rect x="549" y="596" width="313" height="52" rx="11" fill="url(#green)" stroke="#5eaa64" stroke-width="2" filter="url(#shadow)"/>
+<text x="705" y="629" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">LIBERO Environment</text>
+<line x1="705" y1="649" x2="705" y2="693" stroke="#57a95c" stroke-width="4" marker-end="url(#greenArrow)"/>
+<rect x="549" y="694" width="313" height="52" rx="11" fill="url(#green)" stroke="#5eaa64" stroke-width="2" filter="url(#shadow)"/>
+<text x="705" y="727" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">Task Success / Evaluation</text>
+</svg>
