@@ -2,7 +2,7 @@
 
 ## 1. System Architecture
 
-![PAC-BC System Architecture](../assets/pac_bc_architecture.png)
+![PAC-BC System Architecture](../assets/pac_bc_architecture.svg)
 
 **Figure 3.1. Proposed Provenance-Aware Behavior Cloning (PAC-BC) system architecture.**
 

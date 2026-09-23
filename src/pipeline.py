@@ -106,9 +106,13 @@ def train_and_evaluate(seed: int = 42) -> dict:
     role_model, role_name, role_scores = _choose(_candidates(NUMERIC,seed), _frame(train), train.role, _frame(val), val.role)
     role_trainval=pd.concat([train,val]); final_role=_candidates(NUMERIC,seed)[role_name].fit(_frame(role_trainval),role_trainval.role)
     # OOF role probabilities avoid leaking target role labels into action-model training.
-    provisional=_candidates(NUMERIC,seed)[role_name]
+    provisional=_candidates(NUMERIC,seed)[role_name]; provisional.fit(_frame(train),train.role)
     cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=seed)
-    oof=cross_val_predict(provisional,_frame(train),train.role,cv=cv,method="predict_proba")
+    oof_raw=cross_val_predict(provisional,_frame(train),train.role,cv=cv,method="predict_proba")
+    # Reorder OOF columns to the project fixed R/I/C feature order (cross_val_predict
+    # returns columns in provisional.classes_ order, which is alphabetical C/I/R).
+    oof_index={label:i for i,label in enumerate(provisional.classes_)}
+    oof=np.column_stack([oof_raw[:,oof_index[role]] for role in ROLES])
     val_prob=_aligned_probabilities(final_role,_frame(val)); test_prob=_aligned_probabilities(final_role,_frame(test))
     # PAC action uses the learned, predicted provenance probabilities as an input feature.
     pac_model,pac_name,pac_scores=_choose(_candidates(ROLE_NUMERIC,seed),_frame(train,oof),train.action_label,_frame(val,val_prob),val.action_label)
@@ -129,6 +133,7 @@ def train_and_evaluate(seed: int = 42) -> dict:
     cm=confusion_matrix(test.role,pred_role,labels=ROLES); pd.DataFrame(cm,index=ROLES,columns=ROLES).to_csv(RESULTS/"role_confusion_matrix.csv")
     stats={"samples":len(df),"base_episodes":df.base_id.nunique(),"roles":df.role.value_counts().to_dict(),"duplicates":int(df.duplicated().sum()),"missing":int(df.isna().sum().sum()),"splits":{k:len(v) for k,v in {"train":train,"validation":val,"test":test}.items()}}
     (RESULTS/"dataset_statistics.json").write_text(json.dumps(stats,indent=2))
+    (DATA/"dataset_statistics.json").write_text(json.dumps(stats,indent=2))
     artifact={"role_model":final_role,"action_model":final_pac,"baseline_model":final_base,"roles":ROLES,"numeric":NUMERIC,"role_numeric":ROLE_NUMERIC,"metadata":{"selected_role_model":role_name,"selected_action_model":pac_name,"dataset":"PAC-LIBERO-Lite deterministic simulator dataset","seed":seed}}
     MODELS.mkdir(parents=True,exist_ok=True); joblib.dump(artifact,MODELS/"pac_bc_pipeline.joblib")
     return {"stats":stats,"metrics":metrics,"selection":artifact["metadata"]}
