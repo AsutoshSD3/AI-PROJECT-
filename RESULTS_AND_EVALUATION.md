@@ -26,6 +26,9 @@ Raw evidence: `results/model_comparison.csv`, `results/role_classification_repor
 - **Role Macro-F1:** macro F1 across referential, incidental, and conflicting source roles.
 - **Mean inference:** batch action-model inference time divided by test samples.
 
+
+
+
 ## Demo evidence
 
 Run `python tests/test_end_to_end.py`. It proves that `models/pac_bc_pipeline.joblib` is loaded, a conflicting sign is classified as conflicting, the action model predicts left for the trusted ALPHA task, and Flask renders the result.
