@@ -43,7 +43,7 @@ Report mean ± standard deviation across seeds. Keep raw rollout CSVs in `result
 
 PAC-BC is a positive result only if it improves on the OCR/text-masking baseline on **both** Priority Compliance and Legitimate-Text Utility. This protects against a masking method that resists conflicting text merely by suppressing all potentially useful labels.
 
-## Demo evidence for DA2
+## Demo evidence
 
 Show one fixed physical seed in three variants:
 
